@@ -3,17 +3,18 @@ import re
 def MainMenu():
     """This will be the home screen in CLI app"""
     tasks = []
-    print("---------------------------------\n"
-          "   Welcome to the Task Planner\n"
-          "---------------------------------\n\n\n\n"
-          "### Main Menu ###\n\n"
-          " 1. Task list\n"
-          " 2. Available Time\n"
-          " 3. Optimized Plan\n"
-          " 4. About Program\n"
-          )
     while True:
+        print("---------------------------------\n"
+            "   Welcome to the Task Planner\n"
+            "---------------------------------\n\n\n\n"
+            "### Main Menu ###\n\n"
+            " 1. Task list\n"
+            " 2. Available Time\n"
+            " 3. Optimized Plan\n"
+            " 4. About Program\n"
+            )
         
+            
         selection = input("Select Menu Option (1 - 4): ").strip()
 
 
@@ -33,11 +34,11 @@ def MainMenu():
                 print("Plan succesfully created!")
                 viewPlan = input("View plan?(y/n): ").strip().lower()
                 if viewPlan == 'y':
-                   ViewPlan(planName, plan, planTime, time)
+                    ViewPlan(planName, plan, planTime, time)
         elif selection == '4':
             About()
         else:
-                
+                    
             print("Invalid Input, please enter a digit between 1 and 4.")
 
         
@@ -70,11 +71,11 @@ def AddTasks(tasks):
           "   Add Tasks\n"
           "---------------------------------\n\n\n\n"
           "Enter tasks following the format below:\n"
-          "(Task name, task length in minutes\n"
+          "(Task name, task length in minutes)\n"
           "Example: (Laundry, 120)\n\n"
-          "## Enter [done] when finished adding tasks."
+          "## Enter [done] when finished adding tasks.\n"
           "***Entering [done] will navigate back to Main Menu\n")
-    conversion = input("Need help converting hours to minutes?(y/n): ").strip.lower()
+    conversion = input("Need help converting hours to minutes?(y/n): ").strip().lower()
     if conversion == 'y':
         while True:
             convert = input("Enter hours value (EX: 2.5): ")
@@ -132,10 +133,12 @@ def CreatePlan(tasks, timeAvailable):
 
     print("---------------------------------\n"
           "   Create Plan\n"
-          "---------------------------------\n\n\n\n"
-          f"## Current Task: {tasks}\n"
-          f"[Allocated time: {timeAvailable}minutes]"      
-          "**Caution New plan will need to be generated if time or tasks are not included**")
+          "---------------------------------\n\n\n\n")
+    for i, key in enumerate(tasks, start = 1):
+        print(f"{i}. {key['name']}: {key['duration']}")
+
+    print(f"[Allocated time: {timeAvailable} minutes \n\n]"      
+          "**Caution New plan will need to be generated if time or tasks are not included**\n")
     
     ready = input("Confirm task and available time are correct (y/n): ")
     if ready.lower() in ('y', 'Y'):
