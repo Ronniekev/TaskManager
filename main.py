@@ -24,7 +24,7 @@ def MainMenu():
             else:
                 pass
         elif selection == "2":
-            time = AvailableTime()
+            time = int(AvailableTime())
         elif selection == "3":
             planName, plan, planTime = CreatePlan(tasks, time)
             if not plan or not planTime:
@@ -74,6 +74,17 @@ def AddTasks(tasks):
           "Example: (Laundry, 120)\n\n"
           "## Enter [done] when finished adding tasks."
           "***Entering [done] will navigate back to Main Menu\n")
+    conversion = input("Need help converting hours to minutes?(y/n): ").strip.lower()
+    if conversion == 'y':
+        while True:
+            convert = input("Enter hours value (EX: 2.5): ")
+            try:
+                inMin = float(convert)*60
+                print(f"{convert} hours is {inMin} minutes" )
+                break
+            except ValueError:
+                print("Invalid input. Please enter a number")
+
     taskFormat = r'^\s*([A-Za-z ]+),\s*(\d+)'
     while True:
         newTask = input("Enter task: ").strip().lower()
