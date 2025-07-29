@@ -125,7 +125,9 @@ def AvailableTime():
         if not taskTimes.isdigit():
             print("Please enter a digit variable ")
         else:
-            return int(taskTimes)
+            checkTime = input(f"You entered {taskTimes} is this correct?(y/n):  ").strip().lower()
+            if checkTime == 'y':
+                return int(taskTimes)
         
 def CreatePlan(tasks, timeAvailable):
     """Returns an optimized plan"""
