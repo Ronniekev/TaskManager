@@ -1,4 +1,6 @@
 import re
+import zmq
+import time
 
 def MainMenu():
     """This will be the home screen in CLI app"""
@@ -35,6 +37,14 @@ def MainMenu():
                 viewPlan = input("View plan?(y/n): ").strip().lower()
                 if viewPlan == 'y':
                     ViewPlan(planName, plan, planTime, time)
+                    taskswap = input("Would you like to swap a task?(y/n)").strip().lower()
+                    if taskswap == 'y':
+                        data = updatePlan(plan, tasks, planTime)
+                        plan = main(5555, data)
+
+                        
+                        
+                
         elif selection == '4':
             About()
         else:
@@ -53,7 +63,7 @@ def TaskList(tasks):
     )
 
     for i, key in enumerate(tasks, start = 1):
-        print(f"{i}. {key['name']}: {key['duration']}")
+        print(f"{i}. {key['id']}: {key['duration']}")
     
     while True:
         
@@ -101,7 +111,7 @@ def AddTasks(tasks):
             duration = int(validFormat.group(2))
             
             newTask = {
-                "name": name,
+                "id": name,
                 "duration": duration, 
             }
             tasks.append(newTask)
@@ -137,7 +147,7 @@ def CreatePlan(tasks, timeAvailable):
           "   Create Plan\n"
           "---------------------------------\n\n\n\n")
     for i, key in enumerate(tasks, start = 1):
-        print(f"{i}. {key['name']}: {key['duration']}")
+        print(f"{i}. {key['id']}: {key['duration']}")
 
     print(f"[Allocated time: {timeAvailable} minutes \n\n]"      
           "**Caution New plan will need to be generated if time or tasks are not included**\n")
@@ -188,11 +198,40 @@ def ViewPlan(planName, plannedTasks, usedTime, time):
         "Here's your plan for today!\n")
     
     for i, key in enumerate(plannedTasks, start = 1):
-        print(f"{i}. {key['name']}: {key['duration']}")
+        print(f"{i}. {key['id']}: {key['duration']}")
     
     print(f"This plan uses {usedTime} minutes of {time} minutes available.\n",
           "## This plan is an optimal plan that has leveragred dynamic programming to generate a solution of tasks" \
           "that efficeintly use the majority of available time.")
+
+def updatePlan(plan, tasks,plantime):
+    """this function allows the user to select a task to swap"""
+    data = {'action': 'update_plan',}
+    remove = input("Enter name of task to remove (as show in plan): ")
+    data['remove'] = remove
+    addTask = input("Would you like to add a task to the plan? (y/n): ").lower().strip()
+    if addTask == 'n':
+        pass
+    else:
+        print(f"Task list \n")
+        for i, key in enumerate(tasks, start = 1):
+            print(f"{i}. {key['id']}: {key['duration']}")
+        add = input("Enter name of task you would like to add to plan\n" \
+        "*** Match naming format: ")
+        for task in tasks:
+            if task["id"].lower() == add.lower():
+                data['add'] = task
+            else:
+                data['add'] = {'id': add, 'duration': 0}
+    data['plan'] = plan
+    data['allocated_time'] = plantime
+    print(data)
+    return data
+    
+
+
+
+
     
 def About():
     """Short description about this program"""
@@ -205,6 +244,20 @@ def About():
         "Behind the scenes we leverage a dynamic programming algorithm similiar to the (0/1)KnapSack solution. The algorithm" \
         "ensures that each plan is utilizing the maximum possible time available to complete full tasks!")
         
+def main(port, data):
+    #microservice request
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect(f"tcp://localhost:{port}")
+
+    
+    print("\nSending request")
+    socket.send_json(data)  # use send_json since all requests will be in JSON format
+
+        # get the reply from the server
+    reply = socket.recv_json()
+    print(reply)
+    return reply
 
     
     
